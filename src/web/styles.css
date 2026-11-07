@@ -1,0 +1,770 @@
+/*
+ * Vane vekkerklokke. Fargene er Vanes egne (src/theme.ts i Vane-appen), pluss varme kveldsfarger.
+ * 1rem er en nittiendedel av skjermhøyden (10 px på 1440 × 900), så alt skalerer med skjermen.
+ */
+
+:root {
+  --bg: #f6f6f3;
+  --card: #ffffff;
+  --text: #1c1c1e;
+  --sub: #6a6a6f;
+  --faint: #a3a3a7;
+  --hair: #ecece8;
+  --field: #f2f2ee;
+  --border: #dcdcd7;
+  --salvie: #6f9a68;
+  --himmel: #5f8db8;
+  --lavendel: #8b7bbe;
+  --fersken: #c7835a;
+  --sand: #ae9142;
+  --rose: #c27383;
+  --danger: #a1281f;
+
+  --ev-bg: #15100c;
+  --ev-deep: #0e0b09;
+  --ev-text: #e8d2b8;
+  --ev-sub: #a38c74;
+  --ev-faint: #7c6a58;
+  --ev-button: #2b2119;
+  --ev-line: #3a2d22;
+  --ev-accent: #e3b48c;
+
+  --al-bg: #fbefe3;
+  --al-pill: #f3dfcc;
+  --al-ink: #7a3f1c;
+  --al-sub: #6a5e54;
+  --al-bar: #c7835a;
+  --al-bar-soft: #e7c3a6;
+
+  --day-bg: #ecece7;
+  --day-text: #2e2e30;
+  --day-sub: #636366;
+
+  --night-ink: #6a2312;
+  --night-dim: #4a180b;
+  --night-faint: #2a0e07;
+
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', system-ui, sans-serif;
+  font-size: min(calc(100vh / 90), calc(100vw / 144));
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: #000000;
+  user-select: none;
+  -webkit-user-select: none;
+}
+body[data-phase='day'] { background: var(--day-bg); }
+body[data-phase='morning'] { background: var(--bg); }
+body[data-phase='evening'] { background: var(--ev-bg); }
+body[data-phase='alarm'] { background: var(--al-bg); }
+
+body.idle,
+body.idle * {
+  cursor: none !important;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+button:focus-visible,
+input:focus-visible {
+  outline: 0.3rem solid var(--himmel);
+  outline-offset: 0.3rem;
+}
+
+h1, h2, p {
+  margin: 0;
+}
+
+.screen {
+  position: fixed;
+  inset: 0;
+  box-sizing: border-box;
+  display: flex;
+}
+
+.label {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sub);
+}
+
+.icon-button {
+  width: 5.6rem;
+  height: 5.6rem;
+  border-radius: 2.8rem;
+  border: none;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.offline {
+  position: fixed;
+  left: 50%;
+  top: 2.4rem;
+  transform: translateX(-50%);
+  font-size: 1.6rem;
+  color: var(--faint);
+}
+
+/* Venter på serveren */
+
+.waiting {
+  align-items: center;
+  justify-content: center;
+  background: #000000;
+  color: #3a1409;
+  font-size: 2rem;
+}
+
+/* Kveld */
+
+.evening {
+  padding: 8.8rem 10.4rem;
+  background: var(--ev-bg);
+  color: var(--ev-text);
+  flex-direction: column;
+  justify-content: space-between;
+}
+.evening-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.evening-time {
+  font-size: 20rem;
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+.evening-date {
+  margin-top: 0.8rem;
+  font-size: 3rem;
+  font-weight: 300;
+  color: var(--ev-sub);
+}
+.evening-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 3.2rem;
+}
+.evening-title {
+  font-size: 4.8rem;
+  font-weight: 400;
+}
+.evening-sub {
+  margin-top: 1.2rem;
+  font-size: 2.6rem;
+  font-weight: 300;
+  color: var(--ev-sub);
+}
+.evening-actions {
+  display: flex;
+  align-items: center;
+  gap: 2.8rem;
+}
+.evening-note {
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--ev-faint);
+}
+.pill-dark {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  height: 6.4rem;
+  padding: 0 3.6rem;
+  border-radius: 3.2rem;
+  border: none;
+  background: var(--ev-button);
+  color: #f1dfc9;
+  font-size: 2.4rem;
+  font-weight: 500;
+}
+.evening .icon-button {
+  color: var(--ev-faint);
+}
+
+/* God natt */
+
+.goodnight {
+  padding: 8rem 10.4rem;
+  background: var(--ev-deep);
+  color: var(--ev-text);
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+}
+.goodnight-title {
+  font-size: 5.2rem;
+  font-weight: 300;
+}
+.goodnight-sub {
+  margin-top: 0.8rem;
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: #8f7a65;
+}
+.goodnight-middle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.8rem;
+}
+.goodnight-row {
+  display: flex;
+  align-items: center;
+  gap: 4.8rem;
+}
+.goodnight-time {
+  font-size: 18.4rem;
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  min-width: 46rem;
+}
+.goodnight-time.off {
+  color: #3e3128;
+}
+.round {
+  width: 7.2rem;
+  height: 7.2rem;
+  border-radius: 3.6rem;
+  border: 0.1rem solid var(--ev-line);
+  background: #1b1511;
+  color: var(--ev-text);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.goodnight-info {
+  font-size: 2.4rem;
+  font-weight: 300;
+  color: var(--ev-sub);
+}
+.goodnight-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+.goodnight-buttons {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+}
+.pill-light {
+  height: 6.4rem;
+  padding: 0 4rem;
+  border-radius: 3.2rem;
+  border: none;
+  background: var(--ev-text);
+  color: var(--ev-bg);
+  font-size: 2.4rem;
+  font-weight: 500;
+}
+.pill-outline {
+  height: 6.4rem;
+  padding: 0 3.2rem;
+  border-radius: 3.2rem;
+  border: 0.1rem solid var(--ev-line);
+  background: transparent;
+  color: var(--ev-text);
+  font-size: 2.2rem;
+}
+.goodnight-note {
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: var(--ev-faint);
+}
+.link-dark {
+  border: none;
+  background: transparent;
+  color: var(--ev-faint);
+  font-size: 1.8rem;
+  height: 4.4rem;
+  padding: 0 1.6rem;
+}
+
+/* Natt */
+
+.night {
+  background: #000000;
+  cursor: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1.6rem;
+  text-align: center;
+}
+.glimt-time {
+  font-size: 16.8rem;
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--night-ink);
+}
+.glimt-sub {
+  font-size: 2.4rem;
+  font-weight: 300;
+  color: var(--night-dim);
+}
+.glimt-hint {
+  margin-top: 4rem;
+  font-size: 1.6rem;
+  color: var(--night-faint);
+}
+
+/* Soloppgang */
+
+.sunrise {
+  padding: 7.2rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  cursor: none;
+}
+.sunrise-time {
+  font-size: 9.6rem;
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.sunrise-sub {
+  font-size: 2.2rem;
+  font-weight: 300;
+}
+
+/* Alarm */
+
+.alarm {
+  padding: 5.6rem 8rem 7.2rem;
+  background: var(--al-bg);
+  color: var(--text);
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+.alarm-top {
+  align-self: stretch;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.radio-pill {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  height: 5.2rem;
+  padding: 0 2.2rem;
+  border-radius: 2.6rem;
+  background: var(--al-pill);
+  color: var(--al-ink);
+}
+.radio-name {
+  font-size: 2rem;
+  font-weight: 500;
+}
+.radio-note {
+  font-size: 1.8rem;
+  color: #7a5a44;
+}
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
+  height: 2rem;
+}
+.bars span {
+  width: 0.4rem;
+  height: 100%;
+  border-radius: 0.2rem;
+  background: var(--al-bar);
+  transform-origin: bottom;
+  animation: bar 1.6s ease-in-out infinite;
+}
+.bars span:nth-child(2) { animation-delay: -0.4s; }
+.bars span:nth-child(3) { animation-delay: -0.8s; background: var(--al-bar-soft); }
+.bars span:nth-child(4) { animation-delay: -1.2s; background: var(--al-bar-soft); }
+.bars.still span { animation: none; transform: scaleY(0.3); }
+@keyframes bar {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bars span { animation: none; transform: scaleY(0.6); }
+}
+.alarm-date {
+  font-size: 2rem;
+  color: var(--al-sub);
+}
+.alarm-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+.alarm-greeting {
+  font-size: 3rem;
+  font-weight: 300;
+  color: var(--al-sub);
+}
+.alarm-time {
+  font-size: 24rem;
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.alarm-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.8rem;
+}
+.hold {
+  position: relative;
+  overflow: hidden;
+  width: 52rem;
+  height: 8.8rem;
+  border-radius: 4.4rem;
+  border: none;
+  background: var(--text);
+  color: #ffffff;
+  font-size: 2.6rem;
+  font-weight: 500;
+  padding: 0;
+  touch-action: none;
+}
+.hold-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--fersken);
+}
+.hold-label {
+  position: relative;
+}
+.hold-hint {
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--al-sub);
+}
+
+/* Morgen (A: lys som Vane) */
+
+.morning {
+  padding: 7.2rem 8rem;
+  gap: 5.6rem;
+  background: var(--bg);
+  color: var(--text);
+}
+.morning-left {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.morning-clock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.morning-time {
+  font-size: 21.6rem;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+.morning-date {
+  font-size: 3.2rem;
+  color: var(--sub);
+}
+.card {
+  background: var(--card);
+  border-radius: 2.4rem;
+  padding: 2.8rem 3.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+}
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.card-head .source {
+  font-size: 1.4rem;
+  color: var(--sub);
+}
+.card .label {
+  font-size: 1.4rem;
+}
+.event {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+}
+.event-dot {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.5rem;
+  flex: none;
+}
+.event-time {
+  width: 9.6rem;
+  flex: none;
+  font-size: 2.4rem;
+  color: var(--sub);
+}
+.event-title {
+  font-size: 2.8rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.hair {
+  height: 0.1rem;
+  background: var(--hair);
+}
+.card-note {
+  font-size: 2.2rem;
+  color: var(--sub);
+}
+.weather {
+  width: 48rem;
+  flex: none;
+  box-sizing: border-box;
+  padding: 3.2rem;
+  gap: 2.4rem;
+}
+.weather-now {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  color: var(--himmel);
+}
+.weather-temp {
+  font-size: 8.4rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--text);
+}
+.weather-text {
+  margin-top: 0.4rem;
+  font-size: 2.2rem;
+  color: var(--sub);
+}
+.hours {
+  display: flex;
+  flex-direction: column;
+  border-top: 0.1rem solid var(--hair);
+}
+.hour {
+  display: flex;
+  align-items: center;
+  height: 5.6rem;
+  font-size: 2.2rem;
+  border-bottom: 0.1rem solid var(--hair);
+}
+.hour:last-child {
+  border-bottom: none;
+}
+.hour-time {
+  width: 6.4rem;
+  color: var(--sub);
+}
+.hour-text {
+  flex: 1 1 0;
+}
+.hour-rain {
+  width: 9rem;
+  text-align: right;
+  color: var(--himmel);
+}
+.hour-temp {
+  width: 6.4rem;
+  text-align: right;
+}
+.weather-foot {
+  margin-top: auto;
+  font-size: 2rem;
+  color: var(--sub);
+}
+
+/* Dag */
+
+.day {
+  padding: 7.2rem 9.6rem;
+  background: var(--day-bg);
+  color: var(--day-text);
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+.day-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+.day-time {
+  font-size: 26rem;
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.day-date {
+  font-size: 3.2rem;
+  font-weight: 300;
+  color: var(--day-sub);
+}
+.day-bottom {
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  font-size: 2.4rem;
+  font-weight: 300;
+  color: var(--day-sub);
+}
+.day-bottom > :last-child {
+  text-align: right;
+}
+.day .icon-button {
+  color: var(--faint);
+}
+
+/* Innstillinger */
+
+.settings {
+  background: var(--bg);
+  color: var(--text);
+  flex-direction: column;
+  overflow-y: auto;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.settings-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3.2rem 8rem 2rem;
+  background: var(--bg);
+}
+.settings-head h1 {
+  font-size: 4rem;
+  font-weight: 600;
+}
+.settings-actions {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+}
+.settings-body {
+  padding: 1.2rem 8rem 6.4rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.4rem;
+  align-items: start;
+}
+.settings .card {
+  gap: 1.4rem;
+}
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  min-height: 5.2rem;
+  font-size: 2rem;
+}
+.field.stack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.8rem;
+}
+.field input[type='text'],
+.field input[type='url'],
+.field input[type='number'],
+.field input[type='time'] {
+  font: inherit;
+  font-size: 2rem;
+  height: 4.8rem;
+  box-sizing: border-box;
+  padding: 0 1.4rem;
+  border-radius: 1.2rem;
+  border: 0.1rem solid var(--border);
+  background: var(--field);
+  color: var(--text);
+}
+.field input[type='number'] {
+  width: 12rem;
+}
+.field input[type='time'] {
+  width: 17rem;
+}
+.field input:disabled {
+  opacity: 0.4;
+}
+.settings input[type='checkbox'] {
+  width: 2.4rem;
+  height: 2.4rem;
+  margin: 0;
+  accent-color: var(--salvie);
+}
+.day-row {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  font-size: 2rem;
+  min-height: 5.2rem;
+}
+.day-row label {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+}
+.help {
+  font-size: 1.7rem;
+  color: var(--sub);
+  line-height: 1.4;
+}
+.error {
+  font-size: 2rem;
+  color: var(--danger);
+}
+.pill {
+  height: 5.2rem;
+  padding: 0 2.8rem;
+  border-radius: 2.6rem;
+  border: none;
+  font-size: 2rem;
+  font-weight: 500;
+}
+.pill.primary {
+  background: var(--text);
+  color: #ffffff;
+}
+.pill.secondary {
+  background: #eaeae5;
+  color: var(--text);
+}
