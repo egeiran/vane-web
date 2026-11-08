@@ -37,6 +37,23 @@ function isDismissed(alarm: Alarm, state: State): boolean {
   return state.dismissedAt !== null && Date.parse(state.dismissedAt) >= alarm.sunriseFrom.getTime();
 }
 
+/**
+ * Ble alarmen skrudd av mens en ekte alarm hadde soloppgang eller ringte? Bare da kommer
+ * morgenskjermen. En prøvealarm om kvelden skal ikke gi lys morgen.
+ */
+function dismissedRealAlarm(dismissed: number, config: Config, state: State): boolean {
+  const day = startOfDay(new Date(dismissed));
+  for (const d of [addDays(day, -1), day]) {
+    const time = alarmTimeFor(d, config, state);
+    if (!time) continue;
+    const a = alarmOn(d, time, config);
+    if (dismissed >= a.sunriseFrom.getTime() && dismissed <= a.at.getTime() + config.maxRingMinutes * MINUTE) {
+      return true;
+    }
+  }
+  return false;
+}
+
 /** Alarmen som ringer nå, eller den neste. Alarmer som er skrudd av eller har gitt seg, telles ikke. */
 export function nextAlarm(now: Date, config: Config, state: State): Alarm | null {
   const candidates: Alarm[] = [];
@@ -152,7 +169,14 @@ export function evaluate(now: Date, config: Config, state: State): Evaluation {
   let phase: Phase;
   if (alarm && t >= alarm.at.getTime()) phase = 'alarm';
   else if (alarm && t >= alarm.sunriseFrom.getTime()) phase = 'sunrise';
-  else if (dismissed !== null && t >= dismissed && t - dismissed < morningMs) phase = 'morning';
+  else if (
+    dismissed !== null &&
+    t >= dismissed &&
+    t - dismissed < morningMs &&
+    dismissedRealAlarm(dismissed, config, state)
+  ) {
+    phase = 'morning';
+  }
   else if (nightOn) phase = 'night';
   else if (end && end.by === 'morning' && t - end.at < morningMs) phase = 'morning';
   else if (isEvening(now, config, state)) phase = 'evening';

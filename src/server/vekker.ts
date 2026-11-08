@@ -142,6 +142,13 @@ export class Vekker {
   dismiss(): boolean {
     if (this.phase !== 'alarm' && this.phase !== 'sunrise') return false;
     const now = this.deps.now();
+    // En prøvealarm tas bare bort. Da kommer du tilbake dit du var, uten morgenskjerm.
+    if (evaluate(now, this.config, this.state).alarm?.test) {
+      this.setState({ ...this.state, test: null });
+      this.deps.log('Prøvealarmen er skrudd av');
+      this.tick(true);
+      return true;
+    }
     const night = this.state.night;
     this.setState({
       ...pruneOverrides(this.state, now),

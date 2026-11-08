@@ -154,6 +154,13 @@ describe('døgnet', () => {
     assert.equal(phase('2026-11-05T15:01:00', s), 'alarm');
   });
 
+  test('en prøvealarm som er skrudd av om kvelden, gir ikke morgenskjerm', () => {
+    // Slik så det ut for de som prøvde før denne rettelsen: skrudd av 21:05, ingen alarm da.
+    const s = { ...EMPTY_STATE, dismissedAt: at('2026-11-08T21:05').toISOString() };
+    assert.equal(phase('2026-11-08T21:10', s), 'day');
+    assert.equal(phase('2026-11-08T21:40', s), 'evening');
+  });
+
   test('sommertid: alarmen går på riktig lokal tid', () => {
     // Sommertiden starter natt til søndag 28. mars 2027.
     const s = night('2027-03-28T22:30');

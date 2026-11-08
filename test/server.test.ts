@@ -123,8 +123,11 @@ describe('vekkeren', () => {
       now = new Date('2026-11-05T15:01:00');
       vekker.tick();
       assert.equal(vekker.currentPhase, 'alarm');
-      vekker.dismiss();
+      assert.equal(vekker.dismiss(), true);
       assert.equal(vekker.state.test, null);
+      // Rett tilbake til dagen, ikke morgenskjermen.
+      assert.equal(vekker.currentPhase, 'day');
+      assert.equal(vekker.state.dismissedAt, null);
     } finally {
       vekker.stop();
     }
