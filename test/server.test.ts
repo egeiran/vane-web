@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { after, describe, test } from 'node:test';
 
 import { eventsBetween } from '../src/server/ical.ts';
-import type { Mac } from '../src/server/mac.ts';
+import { type Mac, parsePower } from '../src/server/mac.ts';
 import { Store } from '../src/server/store.ts';
 import { Vekker } from '../src/server/vekker.ts';
 import { showTime } from '../src/shared/time.ts';
@@ -38,6 +38,22 @@ describe('iCal', () => {
   });
 });
 
+describe('strøm', () => {
+  test('leser pmset -g batt', () => {
+    assert.deepEqual(
+      parsePower("Now drawing from 'Battery Power'\n -InternalBattery-0 (id=1234)\t73%; discharging; 5:12 remaining present: true"),
+      { onBattery: true, percent: 73 },
+    );
+    assert.deepEqual(
+      parsePower("Now drawing from 'AC Power'\n -InternalBattery-0 (id=1234)\t100%; charged; 0:00 remaining present: true"),
+      { onBattery: false, percent: 100 },
+    );
+    // Mac mini: ingen batterilinje.
+    assert.deepEqual(parsePower("Now drawing from 'AC Power'"), { onBattery: false, percent: null });
+    assert.equal(parsePower(''), null);
+  });
+});
+
 type Call = [string, ...unknown[]];
 
 function recordingMac(calls: Call[]): Mac {
@@ -46,6 +62,7 @@ function recordingMac(calls: Call[]): Mac {
     wakeDisplay: () => calls.push(['wakeDisplay']),
     keepDisplayOn: (on) => calls.push(['keepDisplayOn', on]),
     getVolume: async () => 25,
+    power: async () => null,
     setVolume: (v) => calls.push(['setVolume', Math.round(v)]),
     playFallback: (f) => calls.push(['playFallback', f]),
     close: () => {},

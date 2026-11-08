@@ -49,6 +49,9 @@ export type State = {
   test: { at: string; sunriseSeconds: number } | null;
 };
 
+/** Strømmen på Macen. `percent` er `null` på en Mac uten batteri. */
+export type Power = { onBattery: boolean; percent: number | null };
+
 export type Phase = 'evening' | 'night' | 'sunrise' | 'alarm' | 'morning' | 'day';
 
 /** Det nettsiden trenger for å vise riktig skjerm. Tidspunkter som ISO-tekst. */
@@ -61,6 +64,8 @@ export type View = {
   upcoming: { date: DateKey; weekday: string; time: string | null; defaultTime: string | null };
   bedtime: string | null;
   autoNightAt: string;
+  /** `null` når serveren ikke vet (utenfor macOS, eller før første måling). */
+  power: Power | null;
   config: Config;
 };
 

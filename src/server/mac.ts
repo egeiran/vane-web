@@ -5,12 +5,16 @@
  */
 import { type ChildProcess, execFile, spawn } from 'node:child_process';
 
+import type { Power } from '../shared/types.ts';
+
 export type Mac = {
   sleepDisplay(): void;
   wakeDisplay(): void;
   /** Hindrer at skjermen sovner av seg selv (om dagen og under alarmen). */
   keepDisplayOn(on: boolean): void;
   getVolume(): Promise<number | null>;
+  /** Går Macen på lader eller batteri? */
+  power(): Promise<Power | null>;
   setVolume(percent: number): void;
   /** Spiller `file` om og om igjen, til den slås av. */
   playFallback(file: string | null): void;
@@ -60,6 +64,9 @@ export function createMac(log: (msg: string) => void): Mac {
         display = null;
       }
     },
+    async power() {
+      return parsePower(await run('pmset', ['-g', 'batt'], log));
+    },
     async getVolume() {
       const out = await run('osascript', ['-e', 'output volume of (get volume settings)'], log);
       const n = Number(out);
@@ -86,7 +93,21 @@ export function createMac(log: (msg: string) => void): Mac {
   };
 }
 
+/**
+ * Leser `pmset -g batt`, for eksempel:
+ *   Now drawing from 'Battery Power'
+ *    -InternalBattery-0 (id=1234)	73%; discharging; 5:12 remaining present: true
+ */
+export function parsePower(text: string): Power | null {
+  const onBattery = text.includes("'Battery Power'");
+  if (!onBattery && !text.includes("'AC Power'")) return null;
+  const m = /(\d+)%/.exec(text);
+  return { onBattery, percent: m ? Number(m[1]) : null };
+}
+
+/** Utenfor macOS. `VANE_FAKE_POWER=battery:73` later som om Macen går på batteri. */
 function fakeMac(log: (msg: string) => void): Mac {
+  const fake = process.env.VANE_FAKE_POWER;
   let displayOn = false;
   let volume = 30;
   let playing: string | null = null;
@@ -98,6 +119,8 @@ function fakeMac(log: (msg: string) => void): Mac {
       displayOn = on;
     },
     getVolume: async () => volume,
+    power: async () =>
+      fake ? { onBattery: fake.startsWith('battery'), percent: Number(fake.split(':')[1]) || null } : null,
     setVolume(percent) {
       volume = Math.round(percent);
       log(`[mac] volum ${volume} %`);

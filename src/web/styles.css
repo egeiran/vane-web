@@ -196,6 +196,12 @@ h1, h2, p {
   color: var(--ev-faint);
 }
 
+.power-warning {
+  margin-top: 1.6rem;
+  font-size: 2.4rem;
+  color: var(--ev-accent);
+}
+
 /* God natt */
 
 .goodnight {

@@ -5,7 +5,7 @@
  */
 import { buildView, evaluate, pruneOverrides, upcomingMorning } from '../shared/schedule.ts';
 import { MINUTE, SECOND, dateKey } from '../shared/time.ts';
-import type { Config, Phase, State, View } from '../shared/types.ts';
+import type { Config, Phase, Power, State, View } from '../shared/types.ts';
 import type { Mac } from './mac.ts';
 import type { Store } from './store.ts';
 
@@ -35,6 +35,8 @@ export class Vekker {
   private phase: Phase | null = null;
   private listeners = new Set<(view: View) => void>();
   private lastBroadcast = 0;
+  private power: Power | null = null;
+  private lastPowerCheck = 0;
   private sound: Sound | null = null;
   private sleepTimer: ReturnType<typeof setTimeout> | null = null;
   private timer: ReturnType<typeof setInterval> | null = null;
@@ -58,7 +60,7 @@ export class Vekker {
 
   view(): View {
     const now = this.deps.now();
-    return buildView(now, this.config, this.state, evaluate(now, this.config, this.state));
+    return { ...buildView(now, this.config, this.state, evaluate(now, this.config, this.state)), power: this.power };
   }
 
   subscribe(fn: (view: View) => void): () => void {
@@ -98,8 +100,12 @@ export class Vekker {
       this.enter(ev.phase, prev);
       force = true;
     }
+    if (Date.now() - this.lastPowerCheck >= MINUTE) {
+      this.lastPowerCheck = Date.now();
+      void this.checkPower();
+    }
     if (force || Date.now() - this.lastBroadcast >= 30 * SECOND) {
-      const view = buildView(now, this.config, this.state, ev);
+      const view = { ...buildView(now, this.config, this.state, ev), power: this.power };
       for (const fn of this.listeners) fn(view);
       this.lastBroadcast = Date.now();
     }
@@ -179,6 +185,19 @@ export class Vekker {
     this.config = config;
     this.deps.store.saveConfig(config);
     this.tick(true);
+  }
+
+  /** Sjekker laderen hvert minutt, så kvelden kan si fra hvis Macen går på batteri. */
+  private async checkPower(): Promise<void> {
+    const power = await this.deps.mac.power();
+    const was = this.power;
+    this.power = power;
+    if (power?.onBattery !== was?.onBattery || power?.percent !== was?.percent) {
+      if (power && power.onBattery !== was?.onBattery) {
+        this.deps.log(power.onBattery ? `Macen går på batteri (${power.percent ?? '?'} %)` : 'Macen er koblet til lader');
+      }
+      this.tick(true);
+    }
   }
 
   private setState(state: State): void {

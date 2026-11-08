@@ -42,7 +42,8 @@ Skriptet installerer pakkene, bygger nettsiden og legger inn to LaunchAgents: se
 - **Logg inn automatisk** (Brukere og grupper), så vekkerklokka starter av seg selv etter et strømbrudd.
 - **Batteri → Alternativer:** slå på «Hindre automatisk dvale på strømadapter når skjermen er av». Serveren holder også Macen våken selv (`caffeinate`), men dette er en ekstra sikring.
 - **Skjerm:** slå av automatisk lysstyrke og sett lysstyrken ganske høyt, så soloppgangen merkes. Natta er uansett helt mørk, fordi skjermen slås av.
-- **Lokket åpent og laderen i.** En MacBook med lokket lukket sover, og da går ikke alarmen.
+- **Lokket åpent og laderen i.** En MacBook med lokket lukket sover, og da går ikke alarmen. Går Macen på batteri, sier kvelds- og God natt-skjermen fra, så du kan sjekke laderen. Med lokket åpent holder serveren Macen våken også på batteri, og et fullt batteri varer lenge med skjermen av.
+- **Programvareoppdatering → Automatiske oppdateringer:** slå av «Installer macOS-oppdateringer». Ellers kan Macen starte på nytt om natta for å oppdatere seg. Med FileVault på (vanlig på nyere Macer) går det ikke an å logge inn automatisk, og da står Macen på innloggingsskjermen uten vekkerklokke. Oppdater heller selv på dagtid.
 
 Prøv alarmen under Innstillinger (knappen nede på dagskjermen og kveldsskjermen): «Prøv alarmen om ett minutt» gir en kort soloppgang og så alarm.
 
@@ -56,7 +57,17 @@ Standard er NRK P1 Trøndelag (`https://lyd.nrk.no/nrk_radio_p1_trondelag_mp3_h`
 
 ## Feilsøking
 
-- Loggen ligger i `~/Library/Logs/vane-web.log`. Hver fase skrives dit («Fase: night → sunrise»).
+- Loggen ligger i `~/Library/Logs/vane-web.log`. Hver fase skrives dit («Fase: night → sunrise»), og når Macen går over til batteri eller lader.
+- Sjekk at Macen holdes våken (`caffeinate` skal stå i lista) og om den lader:
+
+```bash
+pmset -g assertions | grep caffeinate
+```
+
+```bash
+pmset -g batt
+```
+
 - Åpne http://127.0.0.1:4545 i en vanlig nettleser for å se det samme som kioskvinduet.
 - Start serveren på nytt:
 

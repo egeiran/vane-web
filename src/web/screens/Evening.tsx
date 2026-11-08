@@ -1,6 +1,7 @@
 import { MINUTE, atTime, dateLabel, durationLabel, fromDateKey, hoursLabel, showTime } from '../../shared/time.ts';
 import type { View } from '../../shared/types.ts';
 import { MoonIcon, SettingsButton } from '../components/Icons.tsx';
+import { PowerWarning } from '../components/PowerWarning.tsx';
 
 type Props = { now: Date; view: View; onGoodnight: () => void; onSettings: () => void };
 
@@ -44,6 +45,7 @@ export function Evening({ now, view, onGoodnight, onSettings }: Props) {
         <div>
           <h2 className="evening-title">{title}</h2>
           <p className="evening-sub">{sub}</p>
+          <PowerWarning power={view.power} />
         </div>
         <div className="evening-actions">
           <button type="button" className="pill-dark" onClick={onGoodnight}>

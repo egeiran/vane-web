@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { dateKey, formatMinutes, hoursLabel, parseTime } from '../../shared/time.ts';
 import type { View } from '../../shared/types.ts';
 import { PlusMinusIcon } from '../components/Icons.tsx';
+import { PowerWarning } from '../components/PowerWarning.tsx';
 
 type Props = {
   now: Date;
@@ -72,6 +73,7 @@ export function GoodNight({ now, view, act, onBack }: Props) {
             ? `Soloppgang fra ${formatMinutes(minutes - config.sunriseMinutes)} · ${config.radio.name} · leggetid for ${hoursLabel(config.sleepHours)}: ${formatMinutes(minutes - config.sleepHours * 60)}`
             : 'Ingen alarm. Sov så lenge du vil.'}
         </p>
+        <PowerWarning power={view.power} />
       </div>
       <div className="goodnight-bottom">
         <div className="goodnight-buttons">

@@ -206,6 +206,7 @@ export function buildView(now: Date, config: Config, state: State, ev: Evaluatio
     },
     bedtime: ev.bedtime ? ev.bedtime.toISOString() : null,
     autoNightAt: ev.autoNightAt.toISOString(),
+    power: null,
     config,
   };
 }
